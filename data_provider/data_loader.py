@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 class Dataset_ETT_hour(Dataset):
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
-                 target='OT', scale=True, timeenc=0, freq='h'):
+                 target='OT', scale=True, timeenc=0, freq='h', start=None, end=None):
         # size [seq_len, label_len, pred_len]
         # info
         if size == None:
@@ -38,20 +38,32 @@ class Dataset_ETT_hour(Dataset):
 
         self.root_path = root_path
         self.data_path = data_path
+
+        self.start = start
+        self.end = end
+
         self.__read_data__()
 
     def __read_data__(self):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
+        # df_raw = df_raw.iloc[:, 1:3]
 
-        border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
-        border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
+        # border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
+        # border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
+        # print(len(df_raw))
+        border1s = [0, 0, 1096*24 - self.seq_len - self.pred_len + 1 - 48]
+        border2s = [1094*24, 1094*24, 1096*24]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
         if self.features == 'M' or self.features == 'MS':
-            cols_data = df_raw.columns[1:]
+            if self.start==None:
+                cols_data = df_raw.columns[1:]
+            else:
+                cols_data = df_raw.columns[self.start:self.end]
+                # cols_data.append(self.target)
             df_data = df_raw[cols_data]
         elif self.features == 'S':
             df_data = df_raw[[self.target]]
@@ -64,7 +76,7 @@ class Dataset_ETT_hour(Dataset):
             data = df_data.values
 
         df_stamp = df_raw[['date']][border1:border2]
-        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+        df_stamp['date'] = pd.to_datetime(df_stamp.date, format="%d/%m/%Y %H:%M")
         if self.timeenc == 0:
             df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
             df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
@@ -78,6 +90,7 @@ class Dataset_ETT_hour(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
         self.data_stamp = data_stamp
+        # print(self.data_x[0])
 
     def __getitem__(self, index):
         s_begin = index
@@ -89,10 +102,11 @@ class Dataset_ETT_hour(Dataset):
         seq_y = self.data_y[r_begin:r_end]
         seq_x_mark = self.data_stamp[s_begin:s_end]
         seq_y_mark = self.data_stamp[r_begin:r_end]
-
+        # print(len(seq_x), len(seq_y), len(seq_x_mark), len(seq_y_mark))
         return seq_x, seq_y, seq_x_mark, seq_y_mark
 
     def __len__(self):
+        # print('haha', len(self.data_x), self.seq_len, self.pred_len)
         return len(self.data_x) - self.seq_len - self.pred_len + 1
 
     def inverse_transform(self, data):

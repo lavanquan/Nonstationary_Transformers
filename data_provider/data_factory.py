@@ -10,7 +10,7 @@ data_dict = {
 }
 
 
-def data_provider(args, flag):
+def data_provider(args, flag, start=None, end=None):
     Data = data_dict[args.data]
     timeenc = 0 if args.embed != 'timeF' else 1
 
@@ -30,6 +30,8 @@ def data_provider(args, flag):
         drop_last = True
         batch_size = args.batch_size
         freq = args.freq
+        start = start
+        end = end
 
     data_set = Data(
         root_path=args.root_path,
@@ -39,9 +41,11 @@ def data_provider(args, flag):
         features=args.features,
         target=args.target,
         timeenc=timeenc,
-        freq=freq
+        freq=freq,
+        start=start,
+        end=end
     )
-    print(flag, len(data_set))
+    # print(flag, len(data_set), type(data_set))
     data_loader = DataLoader(
         data_set,
         batch_size=batch_size,

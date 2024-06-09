@@ -63,6 +63,7 @@ class Dataset_ETT_hour(Dataset):
                 cols_data = df_raw.columns[1:]
             else:
                 cols_data = df_raw.columns[self.start:self.end]
+                # print(cols_data)
                 # cols_data.append(self.target)
             df_data = df_raw[cols_data]
         elif self.features == 'S':

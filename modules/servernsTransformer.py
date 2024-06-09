@@ -9,14 +9,14 @@ class ServerNsTransformer(ServerBase):
     def __init__(self, model, test_loader):
         super().__init__(model, test_loader)
 
-    def model_eval(self, args, test=0):
+    def model_eval(self, args, test_loader=None, test=0):
 
         preds = []
         trues = []
 
         self.model.eval()
         with torch.no_grad():
-            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(self.test_loader):
+            for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
                 batch_x = batch_x.float().to(self.device)
                 batch_y = batch_y.float().to(self.device)
 

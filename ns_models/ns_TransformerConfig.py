@@ -20,9 +20,9 @@ class NS_TransformerConfig():
         self.pred_len=48
 
         # model define
-        self.enc_in=371
-        self.dec_in=371
-        self.c_out=371
+        self.enc_in=37
+        self.dec_in=37
+        self.c_out=37
         self.d_model=64
         self.n_heads=2
         self.e_layers=6

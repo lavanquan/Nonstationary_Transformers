@@ -128,7 +128,8 @@ def download_traffic_dataset():
 
 def clean_traffic(num_ts=860):
     """Preprocess data"""
-    data = pd.read_csv('traffic.txt', delimiter = ',', header=None)
+    print(os.path.abspath(__file__))
+    data = pd.read_csv('/home/qula0496/quan/Nonstationary_Transformers/dataset/traffic/traffic.txt', delimiter = ',', header=None)
     print('data loaded..')
     data_2 = data.copy()
     #pick the first 20 clients

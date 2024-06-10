@@ -53,8 +53,12 @@ class Dataset_ETT_hour(Dataset):
         # border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
         # border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
         # print(len(df_raw))
-        border1s = [0, 0, 1096*24 - self.seq_len - self.pred_len + 1 - 48]
-        border2s = [1094*24, 1094*24, 1096*24]
+        if self.data_path=='electricity.csv':
+            border1s = [0, 0, 1096*24 - self.seq_len - self.pred_len + 1 - 48]
+            border2s = [1094*24, 1094*24, 1096*24]
+        else:
+            border1s = [0, 0, 731*24 - self.seq_len - self.pred_len + 1 - 48]
+            border2s = [729*24, 729*24, 731*24]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
@@ -77,7 +81,10 @@ class Dataset_ETT_hour(Dataset):
             data = df_data.values
 
         df_stamp = df_raw[['date']][border1:border2]
-        df_stamp['date'] = pd.to_datetime(df_stamp.date, format="%d/%m/%Y %H:%M")
+        if self.data_path=='electricity.csv':
+            df_stamp['date'] = pd.to_datetime(df_stamp.date, format="%d/%m/%Y %H:%M")
+        else:
+            df_stamp['date'] = pd.to_datetime(df_stamp.date, format="%Y-%m-%d %H:%M:%S")
         if self.timeenc == 0:
             df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
             df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)

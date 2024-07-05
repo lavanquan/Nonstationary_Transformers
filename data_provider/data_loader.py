@@ -59,9 +59,12 @@ class Dataset_ETT_hour(Dataset):
         elif self.data_path=='traffic.csv':
             border1s = [0, 0, 731*24 - self.seq_len - self.pred_len + 1 - 48]
             border2s = [729*24, 729*24, 731*24]
-        else:
+        elif self.data_path=='kdd.csv':
             border1s = [0, 0, 10898 - self.seq_len - self.pred_len + 1 - 48]
             border2s = [10898 - 2*24, 10898 - 2*24, 10898]
+        else:
+            border1s = [0, 0, 1488 - self.seq_len - self.pred_len + 1 - 2*24]
+            border2s = [1488 - 2*24, 1488 - 2*24, 1488]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
